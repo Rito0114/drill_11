@@ -105,11 +105,16 @@ class Boy:
                 self.image.clip_draw(self.frame * 100, 300, 100, 100, self.x, self.y)
             else:
                 self.image.clip_draw(self.frame * 100, 200, 100, 100, self.x, self.y)
-        elif self.state == 'RUN' or self.state == 'AUTO_RUN':
+        elif self.state == 'RUN':
             if self.face_dir == 1:
                 self.image.clip_draw(self.frame * 100, 100, 100, 100, self.x, self.y)
             else:
                 self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
+        elif self.state == 'AUTO_RUN':
+            if self.face_dir == 1:
+                self.image.clip_draw(self.frame * 100, 100, 100, 100, self.x, self.y + 15, 150, 150)
+            else:
+                self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y + 15, 150, 150)
         elif self.state == 'SLEEP':
             self.image.clip_composite_draw(0, 0, 100, 100, 3.141592 / 2.0, 'h', self.x, self.y - 15, 100, 100)
         else:
