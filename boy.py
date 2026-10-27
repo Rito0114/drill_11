@@ -15,7 +15,7 @@ class Boy:
 
         self.state_machine = Machine(model=self, states=['IDLE', 'RUN', 'SLEEP', 'AUTO_RUN'], initial='IDLE', auto_transitions=False)
 
-        self.state_machine.add_transition(trigger='go_run', source=['IDLE', 'SLEEP'], dest='RUN')
+        self.state_machine.add_transition(trigger='go_run', source=['IDLE', 'SLEEP', 'AUTO_RUN'], dest='RUN')
         self.state_machine.add_transition(trigger='stop_run', source='RUN', dest='IDLE', after='reset_idle_timer')
         self.state_machine.add_transition(trigger='go_sleep', source='IDLE', dest='SLEEP')
         self.state_machine.add_transition(trigger='wake_up', source='SLEEP', dest='IDLE', after='reset_idle_timer')
@@ -64,6 +64,20 @@ class Boy:
             self.frame = 0
 
     def handle_event(self, event):
+        if self.state == 'AUTO_RUN':
+            if event.type == SDL_KEYDOWN:
+                if event.key == SDLK_LEFT:
+                    self.face_dir = -1
+                    self.dir = -1
+                    self.go_run()
+                    return
+                elif event.key == SDLK_RIGHT:
+                    self.face_dir = 1
+                    self.dir = 1
+                    self.go_run()
+                    return
+            return
+
         if self.state == 'SLEEP':
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_SPACE:
