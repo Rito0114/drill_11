@@ -12,12 +12,13 @@ class Boy:
         self.idle_start_time = get_time()
         self.sleep_time = 5.0
 
-        self.state_machine = Machine(model=self, states=['IDLE', 'RUN', 'SLEEP'], initial='IDLE', auto_transitions=False)
+        self.state_machine = Machine(model=self, states=['IDLE', 'RUN', 'SLEEP', 'AUTO_RUN'], initial='IDLE', auto_transitions=False)
 
         self.state_machine.add_transition(trigger='go_run', source=['IDLE', 'SLEEP'], dest='RUN')
         self.state_machine.add_transition(trigger='stop_run', source='RUN', dest='IDLE', after='reset_idle_timer')
         self.state_machine.add_transition(trigger='go_sleep', source='IDLE', dest='SLEEP')
         self.state_machine.add_transition(trigger='wake_up', source='SLEEP', dest='IDLE', after='reset_idle_timer')
+        self.state_machine.add_transition(trigger='go_auto_run', source=['IDLE', 'SLEEP'], dest='AUTO_RUN')
 
         self.dir = 0
         self.speed = 200
@@ -37,6 +38,17 @@ class Boy:
                 self.x = 800
             elif self.x > 800:
                 self.x = 0
+        elif self.state == 'AUTO_RUN':
+            self.frame = (self.frame + 1) % 8
+            self.x += self.dir * self.speed * 0.01
+            if self.x <= 0:
+                self.x = 0
+                self.dir = 1
+                self.face_dir = 1
+            elif self.x >= 800:
+                self.x = 800
+                self.dir = -1
+                self.face_dir = -1
         elif self.state == 'SLEEP':
             self.frame = 0
 
@@ -58,7 +70,7 @@ class Boy:
                     return
                 if event.key == SDLK_a:
                     self.dir = self.face_dir
-                    self.go_run()
+                    self.go_auto_run()
                     return
             return
 
@@ -75,7 +87,7 @@ class Boy:
                     self.go_run()
             elif event.key == SDLK_a and self.state == 'IDLE':
                 self.dir = self.face_dir
-                self.go_run()
+                self.go_auto_run()
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_LEFT and self.dir == -1:
                 self.dir = 0
@@ -92,7 +104,7 @@ class Boy:
                 self.image.clip_draw(self.frame * 100, 300, 100, 100, self.x, self.y)
             else:
                 self.image.clip_draw(self.frame * 100, 200, 100, 100, self.x, self.y)
-        elif self.state == 'RUN':
+        elif self.state == 'RUN' or self.state == 'AUTO_RUN':
             if self.face_dir == 1:
                 self.image.clip_draw(self.frame * 100, 100, 100, 100, self.x, self.y)
             else:
