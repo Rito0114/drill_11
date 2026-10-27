@@ -11,6 +11,7 @@ class Boy:
 
         self.idle_start_time = get_time()
         self.sleep_time = 5.0
+        self.auto_run_start_time = 0
 
         self.state_machine = Machine(model=self, states=['IDLE', 'RUN', 'SLEEP', 'AUTO_RUN'], initial='IDLE', auto_transitions=False)
 
@@ -18,11 +19,18 @@ class Boy:
         self.state_machine.add_transition(trigger='stop_run', source='RUN', dest='IDLE', after='reset_idle_timer')
         self.state_machine.add_transition(trigger='go_sleep', source='IDLE', dest='SLEEP')
         self.state_machine.add_transition(trigger='wake_up', source='SLEEP', dest='IDLE', after='reset_idle_timer')
-        self.state_machine.add_transition(trigger='go_auto_run', source=['IDLE', 'SLEEP'], dest='AUTO_RUN')
+        self.state_machine.add_transition(trigger='go_auto_run', source=['IDLE', 'SLEEP'], dest='AUTO_RUN', after='start_auto_run_timer')
+        self.state_machine.add_transition(trigger='stop_auto_run', source='AUTO_RUN', dest='IDLE', after='reset_idle_timer')
 
         self.dir = 0
         self.speed = 200
         self.auto_speed = 600
+
+    def start_auto_run_timer(self):
+        self.auto_run_start_time = get_time()
+
+    def reset_idle_timer(self):
+        self.idle_start_time = get_time()
 
     def reset_idle_timer(self):
         self.idle_start_time = get_time()
@@ -50,6 +58,8 @@ class Boy:
                 self.x = 800
                 self.dir = -1
                 self.face_dir = -1
+            if get_time() - self.auto_run_start_time > 5.0:
+                self.stop_auto_run()
         elif self.state == 'SLEEP':
             self.frame = 0
 
