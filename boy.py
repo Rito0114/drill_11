@@ -33,10 +33,10 @@ class Boy:
         elif self.state == 'RUN':
             self.frame = (self.frame + 1) % 8
             self.x += self.dir * self.speed * 0.01
-            if self.x < 25:
-                self.x = 25
-            if self.x > 775:
-                self.x = 775
+            if self.x < 0:
+                self.x = 800
+            elif self.x > 800:
+                self.x = 0
         elif self.state == 'SLEEP':
             self.frame = 0
 
@@ -56,6 +56,10 @@ class Boy:
                     self.dir = 1
                     self.go_run()
                     return
+                if event.key == SDLK_a:
+                    self.dir = self.face_dir
+                    self.go_run()
+                    return
             return
 
         if event.type == SDL_KEYDOWN:
@@ -69,6 +73,9 @@ class Boy:
                 self.dir = 1
                 if self.state == 'IDLE':
                     self.go_run()
+            elif event.key == SDLK_a and self.state == 'IDLE':
+                self.dir = self.face_dir
+                self.go_run()
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_LEFT and self.dir == -1:
                 self.dir = 0
