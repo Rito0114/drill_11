@@ -22,6 +22,7 @@ class Boy:
 
         self.dir = 0
         self.speed = 200
+        self.auto_speed = 600
 
     def reset_idle_timer(self):
         self.idle_start_time = get_time()
@@ -40,7 +41,7 @@ class Boy:
                 self.x = 0
         elif self.state == 'AUTO_RUN':
             self.frame = (self.frame + 1) % 8
-            self.x += self.dir * self.speed * 0.01
+            self.x += self.dir * self.auto_speed * 0.01
             if self.x <= 0:
                 self.x = 0
                 self.dir = 1
